@@ -1,32 +1,33 @@
 import Hero from '@/components/Hero';
 import MovieRow from '@/components/MovieRow';
 
-// Mock data for initial rendering until backend is seeded
-const mockMovie = {
-  _id: "1",
-  title: "Inception",
-  description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-  backdropUrl: "https://image.tmdb.org/t/p/original/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg",
-  posterUrl: "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg"
-};
+// Disable caching for dynamic data
+export const dynamic = 'force-dynamic';
 
-const mockMoviesList = [
-  { ...mockMovie, _id: "1" },
-  { ...mockMovie, _id: "2", title: "Interstellar", backdropUrl: "https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg", posterUrl: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" },
-  { ...mockMovie, _id: "3", title: "The Dark Knight", backdropUrl: "https://image.tmdb.org/t/p/original/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg", posterUrl: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" },
-  { ...mockMovie, _id: "4", title: "Dunkirk", backdropUrl: "https://image.tmdb.org/t/p/original/cWCziT1wS4Zz3oE3Q6m2W3D0Xn.jpg", posterUrl: "https://image.tmdb.org/t/p/w500/ebSnODcjuFJu71XyYyVp6OAMxS2.jpg" },
-  { ...mockMovie, _id: "5", title: "Tenet", backdropUrl: "https://image.tmdb.org/t/p/original/wzJRB4MKi3yK138bJyuL9nx47y6.jpg", posterUrl: "https://image.tmdb.org/t/p/w500/k68nPLbIST6NP96JmTxmZijEvCA.jpg" }
-];
+export default async function Home() {
+  let movies = [];
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const res = await fetch(`${apiUrl}/movies`, { cache: 'no-store' });
+    if (res.ok) {
+      movies = await res.json();
+    }
+  } catch (err) {
+    console.error("Failed to fetch movies:", err);
+  }
 
-export default function Home() {
+  // Use the first movie as hero, or a fallback if empty
+  const heroMovie = movies.length > 0 ? movies[0] : null;
+  const trending = movies.slice(0, 8);
+  const actionMovies = movies.slice(8, 16);
+
   return (
     <div className="min-h-screen bg-[#141414]">
-      <Hero movie={mockMovie} />
+      {heroMovie && <Hero movie={heroMovie} />}
       
       <div className="pb-10 -mt-[10%] relative z-10 pl-0">
-        <MovieRow title="Trending Now" movies={mockMoviesList} />
-        <MovieRow title="Top Rated" movies={[...mockMoviesList].reverse()} />
-        <MovieRow title="Action Movies" movies={mockMoviesList} />
+        <MovieRow title="Trending Now" movies={trending} />
+        {movies.length > 8 && <MovieRow title="Action & Adventure" movies={actionMovies} />}
       </div>
     </div>
   );

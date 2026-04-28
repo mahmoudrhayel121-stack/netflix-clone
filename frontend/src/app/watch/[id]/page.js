@@ -18,9 +18,19 @@ export default function WatchPage() {
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    // In a real scenario, fetch movie by ID from backend here
-    // axios.get(`/api/movies/${id}`)
-    setMovie(mockMovie);
+    const fetchMovie = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const res = await fetch(`${apiUrl}/movies/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setMovie(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch movie", err);
+      }
+    };
+    if (id) fetchMovie();
   }, [id]);
 
   if (!movie) {
