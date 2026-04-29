@@ -30,7 +30,9 @@ const VideoPlayer = ({ videoUrl, posterUrl, subtitles }) => {
 
   useEffect(() => {
     // Initialize Video.js when ad finishes
-    if (!showAd && !playerRef.current && videoRef.current) {
+    const isYouTube = videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be');
+    
+    if (!showAd && !playerRef.current && videoRef.current && !isYouTube) {
       const videoElement = document.createElement("video-js");
       videoElement.classList.add('vjs-big-play-centered');
       videoElement.classList.add('vjs-theme-city'); // or default
@@ -125,7 +127,17 @@ const VideoPlayer = ({ videoUrl, posterUrl, subtitles }) => {
         </div>
       ) : null}
 
-      {!showAd && (
+      {!showAd && (videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be')) && (
+        <iframe
+          src={videoUrl}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full absolute inset-0"
+        ></iframe>
+      )}
+
+      {!showAd && !(videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be')) && (
         <div data-vjs-player className="w-full h-full">
           <div ref={videoRef} className="w-full h-full" />
         </div>
