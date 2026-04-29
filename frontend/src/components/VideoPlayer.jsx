@@ -3,13 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 
 const VideoPlayer = ({ embedUrl }) => {
-  const [showAd, setShowAd] = adState();
+  const [showAd, setShowAd] = useState(true);
   const [canSkip, setCanSkip] = useState(false);
   const [timeLeft, setTimeLeft] = useState(5);
-
-  function adState() {
-    return useState(true); // Always show ad first for demonstration
-  }
 
   useEffect(() => {
     if (showAd) {
