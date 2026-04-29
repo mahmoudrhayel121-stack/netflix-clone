@@ -5,7 +5,19 @@ const Movie = require('../models/Movie');
 // @access  Public
 const getMovies = async (req, res) => {
     try {
-        const movies = await Movie.find({}).populate('genres', 'name slug');
+        const keyword = req.query.keyword
+            ? {
+                  title: {
+                      $regex: req.query.keyword,
+                      $options: 'i',
+                  },
+              }
+            : {};
+            
+        const movies = await Movie.find({ ...keyword })
+            .populate('genres', 'name slug')
+            .sort({ isFeatured: -1, createdAt: -1 }); // Sort by featured first, then newest
+            
         res.json(movies);
     } catch (error) {
         res.status(500).json({ message: error.message });
