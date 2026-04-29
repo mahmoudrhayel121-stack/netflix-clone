@@ -1,22 +1,40 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import Hero from '@/components/Hero';
 import MovieRow from '@/components/MovieRow';
 
-// Disable caching for dynamic data
-export const dynamic = 'force-dynamic';
+export default function Home() {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function Home() {
-  let movies = [];
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-    const res = await fetch(`${apiUrl}/movies`, { cache: 'no-store' });
-    if (res.ok) {
-      movies = await res.json();
-    }
-  } catch (err) {
-    console.error("Failed to fetch movies:", err);
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://netflix-backend-api.onrender.com/api';
+        const res = await fetch(`${apiUrl}/movies`);
+        if (res.ok) {
+          const data = await res.json();
+          setMovies(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch movies:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#141414] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-red-600"></div>
+      </div>
+    );
   }
 
-  // Use the first movie as hero, or a fallback if empty
   const heroMovie = movies.length > 0 ? movies[0] : null;
   const trending = movies.slice(0, 8);
   const actionMovies = movies.slice(8, 16);
