@@ -20,8 +20,18 @@ const movieSchema = new mongoose.Schema({
     },
     embedUrl: {
         type: String,
-        required: true,
+        required: false,
     },
+    videoUrl: {
+        type: String, // MP4 or HLS link
+    },
+    subtitles: [{
+        kind: { type: String, default: 'subtitles' },
+        src: { type: String, required: true },
+        srclang: { type: String, required: true },
+        label: { type: String, required: true },
+        default: { type: Boolean, default: false }
+    }],
     genres: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',

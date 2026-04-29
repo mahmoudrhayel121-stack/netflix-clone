@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import VideoPlayer from '@/components/VideoPlayer';
 
-// Mock data for initial rendering
+// Mock data for initial rendering (will be replaced by actual backend data)
 const mockMovie = {
   _id: "1",
   title: "Inception",
   description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-  embedUrl: "https://www.youtube.com/embed/8hP9D6kZseM",
+  videoUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+  posterUrl: "https://image.tmdb.org/t/p/original/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg",
+  subtitles: []
 };
 
 export default function WatchPage() {
@@ -50,7 +52,11 @@ export default function WatchPage() {
           Back to Browse
         </button>
 
-        <VideoPlayer embedUrl={movie.embedUrl} />
+        <VideoPlayer 
+          videoUrl={movie.videoUrl || movie.embedUrl || "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"} 
+          posterUrl={movie.backdropUrl || movie.posterUrl}
+          subtitles={movie.subtitles || []}
+        />
 
         <div className="mt-8 text-white">
           <h1 className="text-3xl font-bold mb-4">{movie.title}</h1>

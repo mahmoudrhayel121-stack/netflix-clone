@@ -32,6 +32,43 @@ async function seedData() {
         }
         console.log("Categories synced.");
 
+        console.log("Inserting High-Quality Demo Movie (Sintel)...");
+        const sintelExists = await Movie.findOne({ title: "Sintel (4K Demo)" });
+        if (!sintelExists) {
+            await Movie.create({
+                title: "Sintel (4K Demo)",
+                description: "A lonely young woman, Sintel, helps and befriends a dragon, whom she calls Scales. But when he is kidnapped by an adult dragon, Sintel decides to embark on a dangerous quest to find her lost friend Scales.",
+                posterUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Sintel_poster.jpg/800px-Sintel_poster.jpg",
+                backdropUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Sintel_poster_2.jpg/1200px-Sintel_poster_2.jpg",
+                videoUrl: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+                subtitles: [
+                    {
+                        kind: 'subtitles',
+                        src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/subtitles_en.vtt',
+                        srclang: 'en',
+                        label: 'English',
+                        default: true
+                    },
+                    {
+                        kind: 'subtitles',
+                        src: 'https://raw.githubusercontent.com/brenopolanski/html5-video-webvtt-example/master/subtitles_ar.vtt', // Placeholder for Arabic vtt
+                        srclang: 'ar',
+                        label: 'Arabic',
+                        default: false
+                    }
+                ],
+                rating: 9.5,
+                releaseDate: new Date('2010-09-27'),
+                seoTitle: "Watch Sintel 4K Free",
+                seoDescription: "Watch the open source movie Sintel in 4K resolution.",
+                isFeatured: true,
+                genres: [] // You can map this if needed
+            });
+            console.log("Added Sintel!");
+        } else {
+            console.log("Sintel already exists.");
+        }
+
         console.log("Fetching popular movies...");
         const movieRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
         const movieData = await movieRes.json();
@@ -40,6 +77,7 @@ async function seedData() {
             const exists = await Movie.findOne({ title: tmdbMovie.title });
             if (exists) {
                 console.log(`Skipping ${tmdbMovie.title}, already exists.`);
+                // Optionally update existing movies to use videoUrl instead of embedUrl
                 continue;
             }
 
